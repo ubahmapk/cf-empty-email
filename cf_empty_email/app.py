@@ -135,42 +135,42 @@ def print_dns_records(dns_records: dict) -> None:
     return None
 
 
-def check_for_mx_records(dns_records: dict) -> bool:
+def parse_for_mx_records(dns_records: dict) -> list[dict]:
     """Check if there is already any MX records for the zone."""
 
     mx_records: list[dict] = [record for record in dns_records if record["type"] == "MX"]
 
-    return bool(mx_records)
+    return mx_records
 
 
-def check_for_spf_records(dns_records: dict) -> bool:
+def parse_for_spf_records(dns_records: dict) -> list[dict]:
     """Check if there is already an SPF records for the zone."""
 
     spf_records: list[dict] = [
         record for record in dns_records if record["type"] == "TXT" and "spf" in record["content"]
     ]
 
-    return bool(spf_records)
+    return spf_records
 
 
-def check_for_dkim_records(dns_records: dict) -> bool:
+def parse_for_dkim_records(dns_records: dict) -> list[dict]:
     """Check if there is already any DKIM records for the zone."""
 
     dkim_records: list[dict] = [
         record for record in dns_records if record["type"] == "TXT" and "DKIM" in record["content"]
     ]
 
-    return bool(dkim_records)
+    return dkim_records
 
 
-def check_for_dmarc_records(dns_records: dict) -> bool:
+def parse_for_dmarc_records(dns_records: dict) -> list[dict]:
     """Check if there is already a DMARC record for the zone."""
 
     dmarc_records: list[dict] = [
         record for record in dns_records if record["type"] == "TXT" and "DMARC" in record["content"]
     ]
 
-    return bool(dmarc_records)
+    return dmarc_records
 
 
 def create_dkim_record(client: httpx.Client, zone_id: str) -> None:
@@ -248,42 +248,19 @@ def create_mx_record(client: httpx.Client, zone_id: str) -> None:
     return None
 
 
-def process_single_zone(cf_zone: str, client: httpx.Client, print_only: bool, force: bool) -> None:
-    """Given a zone name, print all DNS records for that zone."""
+def delete_records(records: list[dict], client: httpx.Client, zone_id: str) -> None:
+    """Delete all records in the list"""
 
-    cf_zone_id: str = ""
-    dns_records: dict = {}
-
-    with client as client:
-        try:
-            cf_zone_id = get_zone_id(client, cf_zone)
-            logger.debug(f"{cf_zone_id=}")
-        except ZoneNotFoundError:
-            exit("Unable to retrieve Zone ID")
-
-        dns_records = retrieve_dns_records(client, cf_zone_id)
-
-    mx_exists: bool = check_for_mx_records(dns_records)
-    spf_exists: bool = check_for_spf_records(dns_records)
-    dkim_exists: bool = check_for_dkim_records(dns_records)
-    dmarc_exists: bool = check_for_dmarc_records(dns_records)
-
-    print(f"MX records exist: {mx_exists}")
-    print(f"SPF records exist: {spf_exists}")
-    print(f"DKIM records exist: {dkim_exists}")
-    print(f"DMARC records exist: {dmarc_exists}")
-    print()
-
-    if print_only:
-        print_dns_records(dns_records)
-        return None
-
-    if (mx_exists or spf_exists or dkim_exists or dmarc_exists) and not force:
-        rprint("[bold red]Email DNS records already exist for this domain.[/bold red]")
-        rprint("[bold]Pass the --force flag to add the records anyway[/bold]")
-        print()
-        print_dns_records(dns_records)
-        return None
+    for record in records:
+        print(f"Record Name: {record['name']}")
+        print(f"Record Type: {record['type']}")
+        print(f"Record Content: {record['content']}")
+        message: str = "Delete this record?"
+        if typer.confirm(message, default=False, show_default=True):
+            try:
+                client.delete(f"/zones/{zone_id}/dns_records/{record['id']}")
+            except httpx.HTTPError as exc:
+                raise DeleteRecordError(f"Unable to delete record {record['id']} for {zone_id}") from exc
 
     return None
 
@@ -339,4 +316,59 @@ def main(
         list_cf_zones(client, cf_api_email)
         exit()
 
-    process_single_zone(cf_zone, client, print_only, force)
+    cf_zone_id: str = ""
+    dns_records: dict = {}
+
+    with client as client:
+        try:
+            cf_zone_id = get_zone_id(client, cf_zone)
+            logger.debug(f"{cf_zone_id=}")
+        except ZoneNotFoundError:
+            exit("Unable to retrieve Zone ID")
+
+        dns_records = retrieve_dns_records(client, cf_zone_id)
+
+    mx_records: list[dict] = parse_for_mx_records(dns_records)
+    spf_records: list[dict] = parse_for_spf_records(dns_records)
+    dkim_records: list[dict] = parse_for_dkim_records(dns_records)
+    dmarc_records: list[dict] = parse_for_dmarc_records(dns_records)
+
+    print(f"MX records exist: {bool(mx_records)}")
+    print(f"SPF records exist: {bool(spf_records)}")
+    print(f"DKIM records exist: {bool(dkim_records)}")
+    print(f"DMARC records exist: {bool(dmarc_records)}")
+    print()
+
+    if print_only:
+        print_dns_records(dns_records)
+        return None
+
+    # Re-open the client
+    client = httpx.Client(base_url="https://api.cloudflare.com/client/v4", headers=client_headers)
+
+    with client as client:
+        if mx_records or spf_records or dkim_records or dmarc_records:
+            if not force:
+                message = "Email DNS records already exist for this domain."
+                rprint(f"[bold red]{message}[/bold red]")
+                message = "Pass the --force flag to add the records anyway."
+                rprint(f"[bold]{message}[/bold]")
+                print()
+                print_dns_records(dns_records)
+                raise typer.Abort()
+
+            if mx_records:
+                delete_records(mx_records, client, cf_zone_id)
+            if spf_records:
+                delete_records(spf_records, client, cf_zone_id)
+            if dkim_records:
+                delete_records(dkim_records, client, cf_zone_id)
+            if dmarc_records:
+                delete_records(dmarc_records, client, cf_zone_id)
+
+        create_mx_record(client, cf_zone_id)
+        create_spf_record(client, cf_zone_id)
+        create_dkim_record(client, cf_zone_id)
+        create_dmarc_record(client, cf_zone_id)
+
+    print_dns_records(dns_records)
