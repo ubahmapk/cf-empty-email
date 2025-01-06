@@ -176,11 +176,12 @@ def parse_for_dmarc_records(dns_records: dict) -> list[dict]:
 def create_dkim_record(client: httpx.Client, zone_id: str) -> None:
     """Create a DKIM record for the zone."""
 
+    # TXT record content must be wrapped in quotes
     record_data = {
         "comment": "Reject all DKIM record",
         "type": "TXT",
         "name": "*._domainkey",
-        "content": "v=DKIM1; p=",
+        "content": '"v=DKIM1; p="',
     }
 
     try:
@@ -194,11 +195,12 @@ def create_dkim_record(client: httpx.Client, zone_id: str) -> None:
 def create_spf_record(client: httpx.Client, zone_id: str) -> None:
     """Create an SPF record for the zone."""
 
+    # TXT record content must be wrapped in quotes
     record_data = {
         "comment": "Reject all senders SPF record",
         "type": "TXT",
         "name": "@",
-        "content": "v=spf1 -all",
+        "content": '"v=spf1 -all"',
     }
 
     try:
@@ -212,11 +214,12 @@ def create_spf_record(client: httpx.Client, zone_id: str) -> None:
 def create_dmarc_record(client: httpx.Client, zone_id: str) -> None:
     """Create a DMARC record for the zone."""
 
+    # TXT record content must be wrapped in quotes
     record_data = {
         "comment": "DMARC reject all record",
         "type": "TXT",
         "name": "_dmarc",
-        "content": "v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s",
+        "content": '"v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s"',
     }
 
     try:
