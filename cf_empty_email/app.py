@@ -231,22 +231,34 @@ def create_dmarc_record(client: httpx.Client, zone_id: str) -> None:
 
 
 def create_mx_record(client: httpx.Client, zone_id: str) -> None:
-    """Create an MX record for the zone."""
+    """Create an null MX record for the root domain and any subdomains."""
 
-    record_data = {
-        "comment": "Null mail server",
-        "type": "MX",
-        "name": "@",
-        "content": ".",
-        "priority": 0,
-        "proxied": False,
-        "ttl": 1,
-    }
+    record_data = [
+        {
+            "comment": "Null mail server for root domain",
+            "type": "MX",
+            "name": "@",
+            "content": ".",
+            "priority": 0,
+            "proxied": False,
+            "ttl": 1,
+        },
+        {
+            "comment": "Null mail server for all subdomains",
+            "type": "MX",
+            "name": "*",
+            "content": ".",
+            "priority": 0,
+            "proxied": False,
+            "ttl": 1,
+        },
+    ]
 
-    try:
-        client.post(f"/zones/{zone_id}/dns_records", json=record_data)
-    except httpx.HTTPError as exc:
-        raise ZoneNotFoundError(f"Unable to create MX record for {zone_id}") from exc
+    for record in record_data:
+        try:
+            client.post(f"/zones/{zone_id}/dns_records", json=record)
+        except httpx.HTTPError as exc:
+            raise ZoneNotFoundError(f"Unable to create MX record for {zone_id}") from exc
 
     return None
 
