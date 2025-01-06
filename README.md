@@ -10,8 +10,7 @@ These DNS records are used to secure an otherwise parked domain (or any domain t
 
  Add empty email DNS records for a given Cloudflare zone.
  Usage: cf_empty_email <zone_name>
- If no zone name is provided, a list of zones available to the user
- will be displayed.
+ If no zone name is provided, a list of zones available to the user will be displayed.
  Credentials are accepted via the two environment variables:
 
  CF_API_KEY
@@ -30,9 +29,9 @@ These DNS records are used to secure an otherwise parked domain (or any domain t
 
 ## Email Records
 
-The SPF, DKIM, and DMARC DNS records that are created in the domain are based on the instructions in the Cloudflare article, ["How to protect domains that do not send email"](https://www.cloudflare.com/learning/dns/dns-records/protect-domains-without-email/) (as of 2025-01-06). The explanation of the records are also copied from there.
+The SPF, DKIM, and DMARC DNS records that are created in the domain are based on the instructions in the Cloudflare article ["How to protect domains that do not send email"](https://www.cloudflare.com/learning/dns/dns-records/protect-domains-without-email/) (as of 2025-01-06). The explanation of the records are also copied from there.
 
-The other entry created is a null MX record, based on [RFC 7505](https://www.rfc-editor.org/rfc/rfc7505).
+The other entry type created is a null MX record, based on [RFC 7505](https://www.rfc-editor.org/rfc/rfc7505).
 
 ### SPF
 
