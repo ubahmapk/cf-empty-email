@@ -1,11 +1,13 @@
 [project]
 name = "cf-empty-email"
 version = "0.1.0"
-description = "Python scrit to inject null email records into Cloudflare DNS"
+description = "Python script to create null email DNS records for domains managed by Cloudflare."
 readme = "README.md"
 authors = [
     { name = "Jon Mark Allen", email = "ubahmapk@proton.me" }
 ]
+keywords = ["cloudflare", "dns", "email", "null"]
+license = {file = "LICENSE"}
 requires-python = ">=3.13"
 dependencies = [
     "httpx>=0.28.1",
@@ -19,8 +21,19 @@ dependencies = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Email",
+    "Topic :: Internet",
+    "Topic :: Internet :: Name Service (DNS)",
+    "Topic :: Security",
     "Topic :: Utilities",
 ]
 
@@ -34,6 +47,10 @@ dev = [
     "ruff>=0.8.6",
     "vermin>=1.6.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/ubahmapk/cf-empty-email.git"
+Issues = "https://github.com/ubahmapk/cf-empty-email/issues"
 
 [project.scripts]
 cf-empty-email = "cf_empty_email.app:app"
