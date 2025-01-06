@@ -26,6 +26,7 @@ classifiers = [
 
 [dependency-groups]
 dev = [
+    "debugpy>=1.8.11",
     "hatchling>=1.27.0",
     "pre-commit>=4.0.1",
     "ruff>=0.8.6",
