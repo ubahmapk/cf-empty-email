@@ -374,4 +374,6 @@ def main(
         create_dkim_record(client, cf_zone_id)
         create_dmarc_record(client, cf_zone_id)
 
-    print_dns_records(dns_records)
+        updated_dns_records = retrieve_dns_records(client, cf_zone_id)
+
+    print_dns_records(updated_dns_records)
