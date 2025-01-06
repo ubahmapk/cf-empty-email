@@ -18,6 +18,10 @@ class ZoneNotFoundError(Exception):
     pass
 
 
+class DeleteRecordError(Exception):
+    pass
+
+
 class Settings(BaseSettings):
     cf_api_key: str = Field(pattern=r"^[a-zA-Z0-9_]*$")
     cf_api_email: EmailStr
