@@ -1,0 +1,40 @@
+[project]
+name = "cf-empty-email"
+version = "0.1.0"
+description = "Python scrit to inject null email records into Cloudflare DNS"
+readme = "README.md"
+authors = [
+    { name = "Jon Mark Allen", email = "ubahmapk@proton.me" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "pandas>=2.2.3",
+    "pydantic[email]>=2.10.4",
+    "pydantic-settings>=2.7.1",
+    "typer>=0.15.1",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+]
+
+[dependency-groups]
+dev = [
+    "hatchling>=1.27.0",
+    "pre-commit>=4.0.1",
+    "ruff>=0.8.6",
+    "vermin>=1.6.0",
+]
+
+[project.scripts]
+cf-empty-email = "cf_empty_email.app:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
