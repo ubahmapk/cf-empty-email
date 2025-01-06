@@ -282,7 +282,7 @@ def version_callback(value: bool) -> None:
 
 @app.command()
 def main(
-    cf_zone: Annotated[str, typer.Argument()] = "",
+    cf_zone: Annotated[str, typer.Argument(help="The domain name managed by Cloudflare")] = "",
     print_only: Annotated[bool, typer.Option("--print", "-p", help="Only print the DNS records for the zone")] = False,
     force: Annotated[bool, typer.Option("--force", "-f", help="Overwrite records if they already exist")] = False,
     verbosity: Annotated[int, typer.Option("--verbose", "-v", help="Repeat for extra verbosity")] = 0,
