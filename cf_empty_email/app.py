@@ -65,7 +65,7 @@ def retrieve_cf_credentials() -> tuple[str, str]:
         rprint(f"[bold red]{message}[/bold red]")
         raise typer.Abort() from None
 
-    logger.debug("AWS credentials found in environment")
+    logger.debug("Cloudflare credentials found in environment")
 
     return cf_api_key, cf_api_email
 
