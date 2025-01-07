@@ -285,7 +285,7 @@ app = typer.Typer(add_completion=False, context_settings={"help_option_names": [
 
 def version_callback(value: bool) -> None:
     if value:
-        print(f"aws-costs version {__version__}")
+        print(f"cf-empty-email version {__version__}")
 
         raise typer.Exit(0)
 
@@ -298,6 +298,17 @@ def main(
     print_only: Annotated[bool, typer.Option("--print", "-p", help="Only print the DNS records for the zone")] = False,
     force: Annotated[bool, typer.Option("--force", "-f", help="Overwrite records if they already exist")] = False,
     verbosity: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Repeat for extra verbosity")] = 0,
+    version: Annotated[
+        bool,
+        typer.Option(
+            "--version",
+            "-V",
+            callback=version_callback,
+            is_eager=True,
+            show_default=False,
+            help="Show the version and exit.",
+        ),
+    ] = False,
 ) -> None:
     """
     \b
