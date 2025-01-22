@@ -22,6 +22,10 @@ class DeleteRecordError(Exception):
     pass
 
 
+class CreateRecordError(Exception):
+    pass
+
+
 class Settings(BaseSettings):
     cf_api_key: str = Field(pattern=r"^[a-zA-Z0-9_]*$")
     cf_api_email: EmailStr
@@ -173,6 +177,17 @@ def parse_for_dmarc_records(dns_records: dict) -> list[dict]:
     return dmarc_records
 
 
+def post_record(client: httpx.Client, zone_id: str, record_data: dict) -> None:
+    """Post a DNS record for the zone."""
+
+    try:
+        client.post(f"/zones/{zone_id}/dns_records", json=record_data)
+    except httpx.HTTPError as exc:
+        raise CreateRecordError(f"Unable to create record for {zone_id}") from exc
+
+    return None
+
+
 def create_dkim_record(client: httpx.Client, zone_id: str) -> None:
     """Create a DKIM record for the zone."""
 
@@ -184,10 +199,7 @@ def create_dkim_record(client: httpx.Client, zone_id: str) -> None:
         "content": '"v=DKIM1; p="',
     }
 
-    try:
-        client.post(f"/zones/{zone_id}/dns_records", json=record_data)
-    except httpx.HTTPError as exc:
-        raise ZoneNotFoundError(f"Unable to create DKIM record for {zone_id}") from exc
+    post_record(client=client, zone_id=zone_id, record_data=record_data)
 
     return None
 
@@ -203,10 +215,7 @@ def create_spf_record(client: httpx.Client, zone_id: str) -> None:
         "content": '"v=spf1 -all"',
     }
 
-    try:
-        client.post(f"/zones/{zone_id}/dns_records", json=record_data)
-    except httpx.HTTPError as exc:
-        raise ZoneNotFoundError(f"Unable to create SPF record for {zone_id}") from exc
+    post_record(client=client, zone_id=zone_id, record_data=record_data)
 
     return None
 
@@ -222,10 +231,7 @@ def create_dmarc_record(client: httpx.Client, zone_id: str) -> None:
         "content": '"v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s"',
     }
 
-    try:
-        client.post(f"/zones/{zone_id}/dns_records", json=record_data)
-    except httpx.HTTPError as exc:
-        raise ZoneNotFoundError(f"Unable to create MX record for {zone_id}") from exc
+    post_record(client=client, zone_id=zone_id, record_data=record_data)
 
     return None
 
@@ -255,10 +261,7 @@ def create_mx_record(client: httpx.Client, zone_id: str) -> None:
     ]
 
     for record in record_data:
-        try:
-            client.post(f"/zones/{zone_id}/dns_records", json=record)
-        except httpx.HTTPError as exc:
-            raise ZoneNotFoundError(f"Unable to create MX record for {zone_id}") from exc
+        post_record(client=client, zone_id=zone_id, record_data=record)
 
     return None
 
