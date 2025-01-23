@@ -1,4 +1,4 @@
-from sys import exit, stderr
+from sys import stderr
 from typing import Annotated
 
 import httpx
@@ -343,7 +343,7 @@ def main(
 
     if not cf_zone:
         list_cf_zones(client, cf_api_email)
-        exit()
+        typer.Exit(0)
 
     cf_zone_id: str = ""
     dns_records: dict = {}
@@ -353,7 +353,8 @@ def main(
             cf_zone_id = get_zone_id(client, cf_zone)
             logger.debug(f"{cf_zone_id=}")
         except ZoneNotFoundError:
-            exit("Unable to retrieve Zone ID")
+            rprint("[bold red]Unable to retrieve Zone ID[/bold red]")
+            typer.Exit(1)
 
         dns_records = retrieve_dns_records(client, cf_zone_id)
 
