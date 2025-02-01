@@ -1,0 +1,10 @@
+name: List Zones
+description: List all zones
+url: https://api.cloudflare.com/client/v4/zones
+headers:
+  - name: X-Auth-Key
+    value: ${CF_API_KEY}
+  - name: X-Auth-Email
+    value: ${CF_API_EMAIL}
+  - name: Content-Type
+    value: application/json
