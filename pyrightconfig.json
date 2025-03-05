@@ -1,4 +1,5 @@
 {
+  "ignore": ["postings/", "tests/"],
   "python.analysis.diagnosticMode": "workspace",
   "python.analysis.typeCheckingMode": "strict",
   "venvPath": ".",
