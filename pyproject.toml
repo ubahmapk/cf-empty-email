@@ -41,7 +41,6 @@ classifiers = [
 dev = [
     "debugpy>=1.8.11",
     "hatchling>=1.27.0",
-    "posting>=2.3.0",
     "pre-commit>=4.0.1",
     "pyright>=1.1.396",
     "pytest>=8.3.4",
