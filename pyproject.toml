@@ -39,13 +39,14 @@ classifiers = [
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.31.0",
     "debugpy>=1.8.11",
     "hatchling>=1.27.0",
+    "ipython>=9.4.0",
     "pre-commit>=4.0.1",
-    "pyright>=1.1.396",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
-    "ruff>=0.8.6",
+    "ruff>=0.12.4",
     "vermin>=1.6.0",
 ]
 
