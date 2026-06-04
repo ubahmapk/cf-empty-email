@@ -1,0 +1,11 @@
+meta {
+  name: Delete Record
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{base_url}}/zones/{{zone_id}}/dns_records/{{record_id}}
+  body: none
+  auth: none
+}

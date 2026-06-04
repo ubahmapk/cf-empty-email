@@ -1,0 +1,21 @@
+meta {
+  name: Create DMARC Records
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/client/v4/zones/{{zone_id}}/dns_records
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "comment": "DMARC reject all record",
+    "type": "TXT",
+    "name": "_dmarc",
+    "content": "\"v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s\""
+  }
+
+}

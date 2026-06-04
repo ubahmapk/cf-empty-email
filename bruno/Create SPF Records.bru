@@ -1,0 +1,20 @@
+meta {
+  name: Create SPF Records
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/client/v4/zones/{{zone_id}}/dns_records
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "comment": "Reject all senders SPF record",
+    "type": "TXT",
+    "name": "@",
+    "content": "\"v=spf1 -all\""
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Create MX Records
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{base_url}}/client/v4/zones/{{zone_id}}/dns_records
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "comment": "Null mail server for root domain",
+    "type": "MX",
+    "name": "@",
+    "content": ".",
+    "priority": 0,
+    "proxied": false,
+    "ttl": 1
+  }
+}

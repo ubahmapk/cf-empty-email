@@ -1,0 +1,11 @@
+meta {
+  name: List DNS Records
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}//client/v4/zones/{{zone_id}}/dns_records
+  body: none
+  auth: none
+}
