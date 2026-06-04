@@ -39,7 +39,6 @@ classifiers = [
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.31.0",
     "debugpy>=1.8.11",
     "hatchling>=1.27.0",
     "ipython>=9.4.0",
